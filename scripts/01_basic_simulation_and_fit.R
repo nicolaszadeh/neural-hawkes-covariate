@@ -9,7 +9,7 @@ dt <- 0.01
 time <- seq(0, T_end, by = dt)
 n_steps <- length(time)
 
-# Ornstein-Uhlenbeck covariate parameters
+# OU covariate parameters
 gamma_true <- 0.8
 sigma_true <- 1.0
 
@@ -25,34 +25,94 @@ cat("alpha / beta =", alpha_true / beta_true, "\n")
 
 
 # ============================================================
-# 2. Simulate the OU covariate X(t)
+# 2. Exact simulation of the OU covariate X(t)
 # ============================================================
+#
+# The OU process is
+#
+#   dX_t = -gamma X_t dt + sigma dW_t.
+#
+# Its exact transition over one time step dt is
+#
+#   X_{k+1}
+#   =
+#   exp(-gamma dt) X_k
+#   +
+#   sigma sqrt((1 - exp(-2 gamma dt)) / (2 gamma)) Z_k,
+#
+# where Z_k ~ N(0, 1).
 
-simulate_ou <- function(time, gamma, sigma, x0 = 0) {
+simulate_ou <- function(
+    time,
+    gamma,
+    sigma,
+    x0 = 0,
+    stationary_start = FALSE
+) {
   dt <- time[2] - time[1]
   n <- length(time)
   
+  if (gamma <= 0) {
+    stop("gamma must be positive.")
+  }
+  
   X <- numeric(n)
-  X[1] <- x0
+  
+  if (stationary_start) {
+    X[1] <- rnorm(
+      1,
+      mean = 0,
+      sd = sigma / sqrt(2 * gamma)
+    )
+  } else {
+    X[1] <- x0
+  }
+  
+  a <- exp(-gamma * dt)
+  
+  innovation_sd <- sigma *
+    sqrt((1 - exp(-2 * gamma * dt)) / (2 * gamma))
   
   for (k in 2:n) {
-    X[k] <- X[k - 1] -
-      gamma * X[k - 1] * dt +
-      sigma * sqrt(dt) * rnorm(1)
+    X[k] <- a * X[k - 1] +
+      innovation_sd * rnorm(1)
   }
   
   X
 }
 
-X <- simulate_ou(time, gamma_true, sigma_true)
+X <- simulate_ou(
+  time = time,
+  gamma = gamma_true,
+  sigma = sigma_true,
+  stationary_start = TRUE
+)
 
 
 # ============================================================
-# 3. Simulate the Hawkes process with covariate baseline
+# 3. Discrete-time simulation of the Hawkes process
 # ============================================================
+#
+# The model is
+#
+#   lambda(t)
+#   =
+#   exp(mu0 + mu1 X(t))
+#   +
+#   sum_{t_j < t} alpha exp(-beta (t - t_j)).
+#
+# We approximate it on the time grid. In each bin of length dt,
+# the number of events is sampled as
+#
+#   dN_k ~ Poisson(lambda_k dt).
 
 simulate_hawkes_discrete <- function(
-    X, dt, mu0, mu1, alpha, beta
+    X,
+    dt,
+    mu0,
+    mu1,
+    alpha,
+    beta
 ) {
   n <- length(X)
   
@@ -69,7 +129,10 @@ simulate_hawkes_discrete <- function(
     H <- H * exp(-beta * dt) + alpha * dN[k]
   }
   
-  list(dN = dN, lambda = lambda)
+  list(
+    dN = dN,
+    lambda = lambda
+  )
 }
 
 sim <- simulate_hawkes_discrete(
@@ -96,9 +159,11 @@ cat("Max number of events in one bin:", max(dN), "\n")
 #
 # We use the binned point-process likelihood:
 #
-#   sum_k dN_k log(lambda_k) - lambda_k dt
+#   sum_k dN_k log(lambda_k) - lambda_k dt.
 #
-# We omit constants independent of the parameters.
+# Constants independent of the parameters are omitted.
+#
+# The optimizer minimizes, so we return the negative log-likelihood.
 
 neg_loglik_full <- function(par, X, dN, dt) {
   mu0 <- par[1]
@@ -148,10 +213,10 @@ fit_full <- optim(
 )
 
 est_full <- c(
-  mu0 = fit_full$par[1],
-  mu1 = fit_full$par[2],
-  alpha = exp(fit_full$par[3]),
-  beta = exp(fit_full$par[4])
+  mu0 = unname(fit_full$par[1]),
+  mu1 = unname(fit_full$par[2]),
+  alpha = unname(exp(fit_full$par[3])),
+  beta = unname(exp(fit_full$par[4]))
 )
 
 cat("\nFull model estimates:\n")
@@ -259,7 +324,11 @@ fit_no_hawkes <- optim(
 loglik_no_hawkes <- -fit_no_hawkes$value
 
 LR_hawkes <- 2 * (loglik_full - loglik_no_hawkes)
-p_hawkes <- pchisq(LR_hawkes, df = 1, lower.tail = FALSE)
+p_hawkes <- pchisq(
+  LR_hawkes,
+  df = 1,
+  lower.tail = FALSE
+)
 
 cat("\nTest of Hawkes self-excitation:\n")
 cat("H0: alpha = 0\n")
@@ -273,7 +342,15 @@ cat("is on the boundary of the parameter space.\n")
 # 8. Reconstruct fitted intensity
 # ============================================================
 
-compute_intensity <- function(X, dN, dt, mu0, mu1, alpha, beta) {
+compute_intensity <- function(
+    X,
+    dN,
+    dt,
+    mu0,
+    mu1,
+    alpha,
+    beta
+) {
   n <- length(X)
   lambda <- numeric(n)
   H <- 0
@@ -304,15 +381,17 @@ lambda_fit <- compute_intensity(
 par(mfrow = c(3, 1), mar = c(4, 4, 2, 1))
 
 plot(
-  time, X,
+  time,
+  X,
   type = "l",
   xlab = "time",
   ylab = "X(t)",
-  main = "OU covariate"
+  main = "Exact OU covariate at grid points"
 )
 
 plot(
-  time, lambda_true,
+  time,
+  lambda_true,
   type = "l",
   xlab = "time",
   ylab = "lambda(t)",
@@ -329,7 +408,8 @@ legend(
 )
 
 plot(
-  time, dN,
+  time,
+  dN,
   type = "h",
   xlab = "time",
   ylab = "dN",
@@ -337,3 +417,83 @@ plot(
 )
 
 par(mfrow = c(1, 1))
+
+# ============================================================
+# 10. Zoomed plots
+# ============================================================
+
+idx <- time <= 50
+
+par(mfrow = c(3, 1), mar = c(4, 4, 2, 1))
+
+plot(
+  time[idx],
+  X[idx],
+  type = "l",
+  xlab = "time",
+  ylab = "X(t)",
+  main = "Zoom: OU covariate"
+)
+
+plot(
+  time[idx],
+  lambda_true[idx],
+  type = "l",
+  xlab = "time",
+  ylab = "lambda(t)",
+  main = "Zoom: true and fitted intensity"
+)
+
+lines(time[idx], lambda_fit[idx], lty = 2)
+
+legend(
+  "topright",
+  legend = c("true", "fitted"),
+  lty = c(1, 2),
+  bty = "n"
+)
+
+plot(
+  time[idx],
+  dN[idx],
+  type = "h",
+  xlab = "time",
+  ylab = "dN",
+  main = "Zoom: observed events"
+)
+
+par(mfrow = c(1, 1))
+
+# ============================================================
+# 11. Difference between fitted and true intensity
+# ============================================================
+
+lambda_error <- lambda_fit - lambda_true
+
+plot(
+  time,
+  lambda_error,
+  type = "l",
+  xlab = "time",
+  ylab = "fit - true",
+  main = "Difference between fitted and true intensity"
+)
+
+abline(h = 0, lty = 2)
+
+# ============================================================
+# 12. Relative error between fitted and true intensity
+# ============================================================
+
+relative_error <- (lambda_fit - lambda_true) / lambda_true
+
+plot(
+  time,
+  relative_error,
+  type = "l",
+  xlab = "time",
+  ylab = "relative error",
+  main = "Relative error of fitted intensity"
+)
+
+abline(h = 0, lty = 2)
