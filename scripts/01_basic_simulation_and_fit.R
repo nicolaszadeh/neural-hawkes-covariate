@@ -9,7 +9,7 @@ dt <- 0.01
 time <- seq(0, T_end, by = dt)
 n_steps <- length(time)
 
-# OU covariate parameters
+# Ornstein-Uhlenbeck covariate parameters
 gamma_true <- 0.8
 sigma_true <- 1.0
 
