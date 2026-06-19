@@ -1,5 +1,10 @@
 set.seed(1)
 
+source("R/hawkes_simulation.R")
+source("R/hawkes_likelihood.R")
+source("R/hawkes_fitting.R")
+source("R/hawkes_plotting.R")
+
 # ============================================================
 # 1. Parameters
 # ============================================================
@@ -7,79 +12,21 @@ set.seed(1)
 T_end <- 500
 dt <- 0.01
 time <- seq(0, T_end, by = dt)
-n_steps <- length(time)
 
-# OU covariate parameters
 gamma_true <- 0.8
 sigma_true <- 1.0
 
-# Hawkes parameters
 mu0_true <- -0.5
 mu1_true <- 0.7
 alpha_true <- 0.7
 beta_true <- 2.5
 
-# Stability check for the one-dimensional Hawkes kernel:
-# alpha / beta should be < 1.
 cat("alpha / beta =", alpha_true / beta_true, "\n")
 
 
 # ============================================================
-# 2. Exact simulation of the OU covariate X(t)
+# 2. Simulate data
 # ============================================================
-#
-# The OU process is
-#
-#   dX_t = -gamma X_t dt + sigma dW_t.
-#
-# Its exact transition over one time step dt is
-#
-#   X_{k+1}
-#   =
-#   exp(-gamma dt) X_k
-#   +
-#   sigma sqrt((1 - exp(-2 gamma dt)) / (2 gamma)) Z_k,
-#
-# where Z_k ~ N(0, 1).
-
-simulate_ou <- function(
-    time,
-    gamma,
-    sigma,
-    x0 = 0,
-    stationary_start = FALSE
-) {
-  dt <- time[2] - time[1]
-  n <- length(time)
-  
-  if (gamma <= 0) {
-    stop("gamma must be positive.")
-  }
-  
-  X <- numeric(n)
-  
-  if (stationary_start) {
-    X[1] <- rnorm(
-      1,
-      mean = 0,
-      sd = sigma / sqrt(2 * gamma)
-    )
-  } else {
-    X[1] <- x0
-  }
-  
-  a <- exp(-gamma * dt)
-  
-  innovation_sd <- sigma *
-    sqrt((1 - exp(-2 * gamma * dt)) / (2 * gamma))
-  
-  for (k in 2:n) {
-    X[k] <- a * X[k - 1] +
-      innovation_sd * rnorm(1)
-  }
-  
-  X
-}
 
 X <- simulate_ou(
   time = time,
@@ -87,53 +34,6 @@ X <- simulate_ou(
   sigma = sigma_true,
   stationary_start = TRUE
 )
-
-
-# ============================================================
-# 3. Discrete-time simulation of the Hawkes process
-# ============================================================
-#
-# The model is
-#
-#   lambda(t)
-#   =
-#   exp(mu0 + mu1 X(t))
-#   +
-#   sum_{t_j < t} alpha exp(-beta (t - t_j)).
-#
-# We approximate it on the time grid. In each bin of length dt,
-# the number of events is sampled as
-#
-#   dN_k ~ Poisson(lambda_k dt).
-
-simulate_hawkes_discrete <- function(
-    X,
-    dt,
-    mu0,
-    mu1,
-    alpha,
-    beta
-) {
-  n <- length(X)
-  
-  dN <- integer(n)
-  lambda <- numeric(n)
-  H <- 0
-  
-  for (k in 1:n) {
-    baseline <- exp(mu0 + mu1 * X[k])
-    lambda[k] <- baseline + H
-    
-    dN[k] <- rpois(1, lambda[k] * dt)
-    
-    H <- H * exp(-beta * dt) + alpha * dN[k]
-  }
-  
-  list(
-    dN = dN,
-    lambda = lambda
-  )
-}
 
 sim <- simulate_hawkes_discrete(
   X = X,
@@ -147,76 +47,26 @@ sim <- simulate_hawkes_discrete(
 dN <- sim$dN
 lambda_true <- sim$lambda
 
-event_times <- time[dN > 0]
-
 cat("Number of events:", sum(dN), "\n")
 cat("Max number of events in one bin:", max(dN), "\n")
 
 
 # ============================================================
-# 4. Log-likelihood
-# ============================================================
-#
-# We use the binned point-process likelihood:
-#
-#   sum_k dN_k log(lambda_k) - lambda_k dt.
-#
-# Constants independent of the parameters are omitted.
-#
-# The optimizer minimizes, so we return the negative log-likelihood.
-
-neg_loglik_full <- function(par, X, dN, dt) {
-  mu0 <- par[1]
-  mu1 <- par[2]
-  alpha <- exp(par[3])
-  beta <- exp(par[4])
-  
-  n <- length(X)
-  H <- 0
-  loglik <- 0
-  
-  for (k in 1:n) {
-    lambda <- exp(mu0 + mu1 * X[k]) + H
-    lambda <- max(lambda, 1e-12)
-    
-    loglik <- loglik +
-      dN[k] * log(lambda) -
-      lambda * dt
-    
-    H <- H * exp(-beta * dt) + alpha * dN[k]
-  }
-  
-  -loglik
-}
-
-
-# ============================================================
-# 5. Fit the full model
+# 3. Fit models and compute LR tests
 # ============================================================
 
-start_full <- c(
-  mu0 = log(sum(dN) / T_end + 1e-6),
-  mu1 = 0,
-  log_alpha = log(0.2),
-  log_beta = log(1.0)
-)
-
-fit_full <- optim(
-  par = start_full,
-  fn = neg_loglik_full,
+fit_result <- fit_all_models_and_tests(
   X = X,
   dN = dN,
   dt = dt,
-  method = "BFGS",
-  hessian = TRUE,
-  control = list(maxit = 1000)
+  hessian = TRUE
 )
 
 est_full <- c(
-  mu0 = unname(fit_full$par[1]),
-  mu1 = unname(fit_full$par[2]),
-  alpha = unname(exp(fit_full$par[3])),
-  beta = unname(exp(fit_full$par[4]))
+  mu0 = fit_result$mu0_hat,
+  mu1 = fit_result$mu1_hat,
+  alpha = fit_result$alpha_hat,
+  beta = fit_result$beta_hat
 )
 
 cat("\nFull model estimates:\n")
@@ -230,138 +80,27 @@ print(c(
   beta = beta_true
 ))
 
-loglik_full <- -fit_full$value
-
-
-# ============================================================
-# 6. Null model: no covariate effect, mu1 = 0
-# ============================================================
-
-neg_loglik_no_covariate <- function(par, X, dN, dt) {
-  mu0 <- par[1]
-  mu1 <- 0
-  alpha <- exp(par[2])
-  beta <- exp(par[3])
-  
-  n <- length(X)
-  H <- 0
-  loglik <- 0
-  
-  for (k in 1:n) {
-    lambda <- exp(mu0 + mu1 * X[k]) + H
-    lambda <- max(lambda, 1e-12)
-    
-    loglik <- loglik +
-      dN[k] * log(lambda) -
-      lambda * dt
-    
-    H <- H * exp(-beta * dt) + alpha * dN[k]
-  }
-  
-  -loglik
-}
-
-start_no_cov <- c(
-  mu0 = log(sum(dN) / T_end + 1e-6),
-  log_alpha = log(0.2),
-  log_beta = log(1.0)
-)
-
-fit_no_cov <- optim(
-  par = start_no_cov,
-  fn = neg_loglik_no_covariate,
-  X = X,
-  dN = dN,
-  dt = dt,
-  method = "BFGS",
-  hessian = TRUE,
-  control = list(maxit = 1000)
-)
-
-loglik_no_cov <- -fit_no_cov$value
-
-LR_cov <- 2 * (loglik_full - loglik_no_cov)
-p_cov <- pchisq(LR_cov, df = 1, lower.tail = FALSE)
-
 cat("\nTest of covariate relevance:\n")
 cat("H0: mu1 = 0\n")
-cat("LR statistic =", LR_cov, "\n")
-cat("p-value =", p_cov, "\n")
-
-
-# ============================================================
-# 7. Null model: no Hawkes self-excitation, alpha = 0
-# ============================================================
-
-neg_loglik_no_hawkes <- function(par, X, dN, dt) {
-  mu0 <- par[1]
-  mu1 <- par[2]
-  
-  lambda <- exp(mu0 + mu1 * X)
-  lambda <- pmax(lambda, 1e-12)
-  
-  loglik <- sum(dN * log(lambda) - lambda * dt)
-  
-  -loglik
-}
-
-start_no_hawkes <- c(
-  mu0 = log(sum(dN) / T_end + 1e-6),
-  mu1 = 0
-)
-
-fit_no_hawkes <- optim(
-  par = start_no_hawkes,
-  fn = neg_loglik_no_hawkes,
-  X = X,
-  dN = dN,
-  dt = dt,
-  method = "BFGS",
-  hessian = TRUE,
-  control = list(maxit = 1000)
-)
-
-loglik_no_hawkes <- -fit_no_hawkes$value
-
-LR_hawkes <- 2 * (loglik_full - loglik_no_hawkes)
-p_hawkes <- pchisq(
-  LR_hawkes,
-  df = 1,
-  lower.tail = FALSE
-)
+cat("LR statistic =", fit_result$LR_cov, "\n")
+cat("p-value =", fit_result$p_cov, "\n")
 
 cat("\nTest of Hawkes self-excitation:\n")
 cat("H0: alpha = 0\n")
-cat("LR statistic =", LR_hawkes, "\n")
-cat("p-value =", p_hawkes, "\n")
+cat("LR statistic =", fit_result$LR_hawkes, "\n")
+cat("p-value =", fit_result$p_hawkes, "\n")
 cat("Warning: this p-value is approximate because alpha = 0\n")
 cat("is on the boundary of the parameter space.\n")
 
+cat("\nOptimization convergence codes:\n")
+cat("Full model:", fit_result$conv_full, "\n")
+cat("No covariate:", fit_result$conv_no_cov, "\n")
+cat("No Hawkes:", fit_result$conv_no_hawkes, "\n")
+
 
 # ============================================================
-# 8. Reconstruct fitted intensity
+# 4. Reconstruct fitted intensity
 # ============================================================
-
-compute_intensity <- function(
-    X,
-    dN,
-    dt,
-    mu0,
-    mu1,
-    alpha,
-    beta
-) {
-  n <- length(X)
-  lambda <- numeric(n)
-  H <- 0
-  
-  for (k in 1:n) {
-    lambda[k] <- exp(mu0 + mu1 * X[k]) + H
-    H <- H * exp(-beta * dt) + alpha * dN[k]
-  }
-  
-  lambda
-}
 
 lambda_fit <- compute_intensity(
   X = X,
@@ -375,125 +114,221 @@ lambda_fit <- compute_intensity(
 
 
 # ============================================================
-# 9. Plots
-# ============================================================
-
-par(mfrow = c(3, 1), mar = c(4, 4, 2, 1))
-
-plot(
-  time,
-  X,
-  type = "l",
-  xlab = "time",
-  ylab = "X(t)",
-  main = "Exact OU covariate at grid points"
-)
-
-plot(
-  time,
-  lambda_true,
-  type = "l",
-  xlab = "time",
-  ylab = "lambda(t)",
-  main = "True and fitted intensity"
-)
-
-lines(time, lambda_fit, lty = 2)
-
-legend(
-  "topright",
-  legend = c("true", "fitted"),
-  lty = c(1, 2),
-  bty = "n"
-)
-
-plot(
-  time,
-  dN,
-  type = "h",
-  xlab = "time",
-  ylab = "dN",
-  main = "Observed events"
-)
-
-par(mfrow = c(1, 1))
-
-# ============================================================
-# 10. Zoomed plots
-# ============================================================
-
-idx <- time <= 50
-
-par(mfrow = c(3, 1), mar = c(4, 4, 2, 1))
-
-plot(
-  time[idx],
-  X[idx],
-  type = "l",
-  xlab = "time",
-  ylab = "X(t)",
-  main = "Zoom: OU covariate"
-)
-
-plot(
-  time[idx],
-  lambda_true[idx],
-  type = "l",
-  xlab = "time",
-  ylab = "lambda(t)",
-  main = "Zoom: true and fitted intensity"
-)
-
-lines(time[idx], lambda_fit[idx], lty = 2)
-
-legend(
-  "topright",
-  legend = c("true", "fitted"),
-  lty = c(1, 2),
-  bty = "n"
-)
-
-plot(
-  time[idx],
-  dN[idx],
-  type = "h",
-  xlab = "time",
-  ylab = "dN",
-  main = "Zoom: observed events"
-)
-
-par(mfrow = c(1, 1))
-
-# ============================================================
-# 11. Difference between fitted and true intensity
+# 5. Intensity error summaries
 # ============================================================
 
 lambda_error <- lambda_fit - lambda_true
+relative_error <- lambda_error / pmax(lambda_true, 1e-12)
 
-plot(
-  time,
-  lambda_error,
-  type = "l",
-  xlab = "time",
-  ylab = "fit - true",
-  main = "Difference between fitted and true intensity"
-)
+cat("\nIntensity error summaries:\n")
+cat("Mean absolute error:",
+    mean(abs(lambda_error)), "\n")
+cat("Root mean squared error:",
+    sqrt(mean(lambda_error^2)), "\n")
+cat("Mean absolute relative error:",
+    mean(abs(relative_error)), "\n")
 
-abline(h = 0, lty = 2)
-
-# ============================================================
-# 12. Relative error between fitted and true intensity
-# ============================================================
-
-relative_error <- (lambda_fit - lambda_true) / lambda_true
-
-plot(
-  time,
+cat("\nRelative error quantiles:\n")
+print(quantile(
   relative_error,
-  type = "l",
-  xlab = "time",
-  ylab = "relative error",
-  main = "Relative error of fitted intensity"
+  probs = c(0.01, 0.05, 0.5, 0.95, 0.99)
+))
+
+
+# ============================================================
+# 6. Main diagnostic plot
+# ============================================================
+
+plot_main_diagnostics <- function() {
+  old_par <- par(no.readonly = TRUE)
+  on.exit(par(old_par))
+
+  par(mfrow = c(3, 1), mar = c(4, 4, 2, 1))
+
+  plot(
+    time,
+    X,
+    type = "l",
+    xlab = "time",
+    ylab = "X(t)",
+    main = "Exact OU covariate at grid points"
+  )
+
+  plot(
+    time,
+    lambda_true,
+    type = "l",
+    lwd = 2,
+    xlab = "time",
+    ylab = "lambda(t)",
+    main = "True and fitted intensity"
+  )
+
+  lines(time, lambda_fit, lty = 2, lwd = 1)
+
+  legend(
+    "topright",
+    legend = c("true", "fitted"),
+    lty = c(1, 2),
+    lwd = c(2, 1),
+    bty = "n"
+  )
+
+  plot(
+    time,
+    dN,
+    type = "h",
+    xlab = "time",
+    ylab = "dN",
+    main = "Observed events"
+  )
+}
+
+plot_main_diagnostics()
+
+save_plot_both(
+  file_stem = "figures/main_diagnostics",
+  plot_function = plot_main_diagnostics
 )
 
-abline(h = 0, lty = 2)
+
+# ============================================================
+# 7. Zoomed diagnostic plot
+# ============================================================
+
+plot_zoom_diagnostics <- function(t_max = 50) {
+  old_par <- par(no.readonly = TRUE)
+  on.exit(par(old_par))
+
+  idx <- time <= t_max
+
+  par(mfrow = c(3, 1), mar = c(4, 4, 2, 1))
+
+  plot(
+    time[idx],
+    X[idx],
+    type = "l",
+    xlab = "time",
+    ylab = "X(t)",
+    main = "Zoom: OU covariate"
+  )
+
+  plot(
+    time[idx],
+    lambda_true[idx],
+    type = "l",
+    lwd = 2,
+    xlab = "time",
+    ylab = "lambda(t)",
+    main = "Zoom: true and fitted intensity"
+  )
+
+  lines(time[idx], lambda_fit[idx], lty = 2, lwd = 1)
+
+  legend(
+    "topright",
+    legend = c("true", "fitted"),
+    lty = c(1, 2),
+    lwd = c(2, 1),
+    bty = "n"
+  )
+
+  plot(
+    time[idx],
+    dN[idx],
+    type = "h",
+    xlab = "time",
+    ylab = "dN",
+    main = "Zoom: observed events"
+  )
+}
+
+plot_zoom_diagnostics(t_max = 50)
+
+save_plot_both(
+  file_stem = "figures/zoom_diagnostics",
+  plot_function = function() plot_zoom_diagnostics(t_max = 50)
+)
+
+
+# ============================================================
+# 8. Intensity error plots
+# ============================================================
+
+plot_intensity_errors <- function() {
+  old_par <- par(no.readonly = TRUE)
+  on.exit(par(old_par))
+
+  par(mfrow = c(2, 1), mar = c(4, 4, 2, 1))
+
+  plot(
+    time,
+    lambda_error,
+    type = "l",
+    xlab = "time",
+    ylab = "fit - true",
+    main = "Difference between fitted and true intensity"
+  )
+
+  abline(h = 0, lty = 2)
+
+  plot(
+    time,
+    relative_error,
+    type = "l",
+    xlab = "time",
+    ylab = "relative error",
+    main = "Relative error of fitted intensity"
+  )
+
+  abline(h = 0, lty = 2)
+}
+
+plot_intensity_errors()
+
+save_plot_both(
+  file_stem = "figures/intensity_errors",
+  plot_function = plot_intensity_errors
+)
+
+
+# ============================================================
+# 9. True versus fitted intensity
+# ============================================================
+
+plot_intensity_scatter <- function() {
+  plot(
+    lambda_true,
+    lambda_fit,
+    pch = 16,
+    cex = 0.3,
+    xlab = "true intensity",
+    ylab = "fitted intensity",
+    main = "Fitted intensity versus true intensity"
+  )
+
+  abline(0, 1, lty = 2)
+}
+
+plot_intensity_scatter()
+
+save_plot_both(
+  file_stem = "figures/intensity_scatter",
+  plot_function = plot_intensity_scatter
+)
+
+
+# ============================================================
+# 10. Final message
+# ============================================================
+
+cat("\nDone.\n")
+cat("Generated files:\n")
+cat("figures/main_diagnostics.png\n")
+cat("figures/main_diagnostics.pdf\n")
+cat("figures/zoom_diagnostics.png\n")
+cat("figures/zoom_diagnostics.pdf\n")
+cat("figures/intensity_errors.png\n")
+cat("figures/intensity_errors.pdf\n")
+cat("figures/intensity_scatter.png\n")
+cat("figures/intensity_scatter.pdf\n")

@@ -1,0 +1,2 @@
+"T_end","dt","B_boot","true_mu0","true_mu1","true_alpha","true_beta","n_events_obs","LR_obs","p_chisq_obs","p_boot","crit_boot_95","crit_chisq_95","mu0_null_hat","mu1_null_hat","alpha_full_obs","beta_full_obs"
+250,0.01,100,-0.5,0.7,0,2.5,144,0,1,1,5.41357576685728,3.84145882069413,-0.615162461986134,0.685766545806261,0.00528496584245538,14.5523083927565
