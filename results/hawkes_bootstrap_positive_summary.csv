@@ -1,2 +1,2 @@
-"T_end","dt","B_boot","true_mu0","true_mu1","true_alpha","true_beta","n_events_obs","LR_obs","p_chisq_obs","p_boot","crit_boot_95","crit_chisq_95","mu0_null_hat","mu1_null_hat","alpha_full_obs","beta_full_obs"
-250,0.01,100,-0.5,0.7,0.7,2.5,270,69.1208203624496,9.26124944036577e-17,0.0099009900990099,5.40211123930632,3.84145882069413,-0.0492980075368376,0.73947877695242,1.04790124132926,2.7320130661169
+"n_events","mu0_null","mu1_null","mu0_full","mu1_full","alpha_full","beta_full","loglik_null","loglik_full","LR","p_chisq","conv_null","conv_full","p_boot","B_boot","n_success","crit_boot_95","crit_chisq_95","mu0_true","mu1_true","alpha_true","beta_true"
+270,-0.0492980075399301,0.739478776954,-0.596422827339258,0.865893733095584,1.04790165873221,2.73201410570362,-201.204238703309,-166.643828522091,69.1208203624374,9.26124944042342e-17,0,0,0.0099009900990099,100,100,5.40215787784837,3.84145882069412,-0.5,0.7,0.7,2.5

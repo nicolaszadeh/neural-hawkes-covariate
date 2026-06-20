@@ -1,0 +1,256 @@
+Null calibration study
+T_end = 250 
+dt = 0.01 
+n_rep = 100 
+
+      scenario mu0_true mu1_true alpha_true beta_true
+1 no_covariate     -0.5      0.0        0.7       2.5
+2    no_hawkes     -0.5      0.7        0.0       2.5
+
+Scenario: no_covariate 
+mu0_true = -0.5 
+mu1_true = 0 
+alpha_true = 0.7 
+beta_true = 2.5 
+
+Running no_covariate | repetition 1 
+Running no_covariate | repetition 2 
+Running no_covariate | repetition 3 
+Running no_covariate | repetition 4 
+Running no_covariate | repetition 5 
+Running no_covariate | repetition 6 
+Running no_covariate | repetition 7 
+Running no_covariate | repetition 8 
+Running no_covariate | repetition 9 
+Running no_covariate | repetition 10 
+Running no_covariate | repetition 11 
+Running no_covariate | repetition 12 
+Running no_covariate | repetition 13 
+Running no_covariate | repetition 14 
+Running no_covariate | repetition 15 
+Running no_covariate | repetition 16 
+Running no_covariate | repetition 17 
+Running no_covariate | repetition 18 
+Running no_covariate | repetition 19 
+Running no_covariate | repetition 20 
+Running no_covariate | repetition 21 
+Running no_covariate | repetition 22 
+Running no_covariate | repetition 23 
+Running no_covariate | repetition 24 
+Running no_covariate | repetition 25 
+Running no_covariate | repetition 26 
+Running no_covariate | repetition 27 
+Running no_covariate | repetition 28 
+Running no_covariate | repetition 29 
+Running no_covariate | repetition 30 
+Running no_covariate | repetition 31 
+Running no_covariate | repetition 32 
+Running no_covariate | repetition 33 
+Running no_covariate | repetition 34 
+Running no_covariate | repetition 35 
+Running no_covariate | repetition 36 
+Running no_covariate | repetition 37 
+Running no_covariate | repetition 38 
+Running no_covariate | repetition 39 
+Running no_covariate | repetition 40 
+Running no_covariate | repetition 41 
+Running no_covariate | repetition 42 
+Running no_covariate | repetition 43 
+Running no_covariate | repetition 44 
+Running no_covariate | repetition 45 
+Running no_covariate | repetition 46 
+Running no_covariate | repetition 47 
+Running no_covariate | repetition 48 
+Running no_covariate | repetition 49 
+Running no_covariate | repetition 50 
+Running no_covariate | repetition 51 
+Running no_covariate | repetition 52 
+Running no_covariate | repetition 53 
+Running no_covariate | repetition 54 
+Running no_covariate | repetition 55 
+Running no_covariate | repetition 56 
+Running no_covariate | repetition 57 
+Running no_covariate | repetition 58 
+Running no_covariate | repetition 59 
+Running no_covariate | repetition 60 
+Running no_covariate | repetition 61 
+Running no_covariate | repetition 62 
+Running no_covariate | repetition 63 
+Running no_covariate | repetition 64 
+Running no_covariate | repetition 65 
+Running no_covariate | repetition 66 
+Running no_covariate | repetition 67 
+Running no_covariate | repetition 68 
+Running no_covariate | repetition 69 
+Running no_covariate | repetition 70 
+Running no_covariate | repetition 71 
+Running no_covariate | repetition 72 
+Running no_covariate | repetition 73 
+Running no_covariate | repetition 74 
+Running no_covariate | repetition 75 
+Running no_covariate | repetition 76 
+Running no_covariate | repetition 77 
+Running no_covariate | repetition 78 
+Running no_covariate | repetition 79 
+Running no_covariate | repetition 80 
+Running no_covariate | repetition 81 
+Running no_covariate | repetition 82 
+Running no_covariate | repetition 83 
+Running no_covariate | repetition 84 
+Running no_covariate | repetition 85 
+Running no_covariate | repetition 86 
+Running no_covariate | repetition 87 
+Running no_covariate | repetition 88 
+Running no_covariate | repetition 89 
+Running no_covariate | repetition 90 
+Running no_covariate | repetition 91 
+Running no_covariate | repetition 92 
+Running no_covariate | repetition 93 
+Running no_covariate | repetition 94 
+Running no_covariate | repetition 95 
+Running no_covariate | repetition 96 
+Running no_covariate | repetition 97 
+Running no_covariate | repetition 98 
+Running no_covariate | repetition 99 
+Running no_covariate | repetition 100 
+
+Scenario: no_hawkes 
+mu0_true = -0.5 
+mu1_true = 0.7 
+alpha_true = 0 
+beta_true = 2.5 
+
+Running no_hawkes | repetition 1 
+Running no_hawkes | repetition 2 
+Running no_hawkes | repetition 3 
+Running no_hawkes | repetition 4 
+Running no_hawkes | repetition 5 
+Running no_hawkes | repetition 6 
+Running no_hawkes | repetition 7 
+Running no_hawkes | repetition 8 
+Running no_hawkes | repetition 9 
+Running no_hawkes | repetition 10 
+Running no_hawkes | repetition 11 
+Running no_hawkes | repetition 12 
+Running no_hawkes | repetition 13 
+Running no_hawkes | repetition 14 
+Running no_hawkes | repetition 15 
+Running no_hawkes | repetition 16 
+Running no_hawkes | repetition 17 
+Running no_hawkes | repetition 18 
+Running no_hawkes | repetition 19 
+Running no_hawkes | repetition 20 
+Running no_hawkes | repetition 21 
+Running no_hawkes | repetition 22 
+Running no_hawkes | repetition 23 
+Running no_hawkes | repetition 24 
+Running no_hawkes | repetition 25 
+Running no_hawkes | repetition 26 
+Running no_hawkes | repetition 27 
+Running no_hawkes | repetition 28 
+Running no_hawkes | repetition 29 
+Running no_hawkes | repetition 30 
+Running no_hawkes | repetition 31 
+Running no_hawkes | repetition 32 
+Running no_hawkes | repetition 33 
+Running no_hawkes | repetition 34 
+Running no_hawkes | repetition 35 
+Running no_hawkes | repetition 36 
+Running no_hawkes | repetition 37 
+Running no_hawkes | repetition 38 
+Running no_hawkes | repetition 39 
+Running no_hawkes | repetition 40 
+Running no_hawkes | repetition 41 
+Running no_hawkes | repetition 42 
+Running no_hawkes | repetition 43 
+Running no_hawkes | repetition 44 
+Running no_hawkes | repetition 45 
+Running no_hawkes | repetition 46 
+Running no_hawkes | repetition 47 
+Running no_hawkes | repetition 48 
+Running no_hawkes | repetition 49 
+Running no_hawkes | repetition 50 
+Running no_hawkes | repetition 51 
+Running no_hawkes | repetition 52 
+Running no_hawkes | repetition 53 
+Running no_hawkes | repetition 54 
+Running no_hawkes | repetition 55 
+Running no_hawkes | repetition 56 
+Running no_hawkes | repetition 57 
+Running no_hawkes | repetition 58 
+Running no_hawkes | repetition 59 
+Running no_hawkes | repetition 60 
+Running no_hawkes | repetition 61 
+Running no_hawkes | repetition 62 
+Running no_hawkes | repetition 63 
+Running no_hawkes | repetition 64 
+Running no_hawkes | repetition 65 
+Running no_hawkes | repetition 66 
+Running no_hawkes | repetition 67 
+Running no_hawkes | repetition 68 
+Running no_hawkes | repetition 69 
+Running no_hawkes | repetition 70 
+Running no_hawkes | repetition 71 
+Running no_hawkes | repetition 72 
+Running no_hawkes | repetition 73 
+Running no_hawkes | repetition 74 
+Running no_hawkes | repetition 75 
+Running no_hawkes | repetition 76 
+Running no_hawkes | repetition 77 
+Running no_hawkes | repetition 78 
+Running no_hawkes | repetition 79 
+Running no_hawkes | repetition 80 
+Running no_hawkes | repetition 81 
+Running no_hawkes | repetition 82 
+Running no_hawkes | repetition 83 
+Running no_hawkes | repetition 84 
+Running no_hawkes | repetition 85 
+Running no_hawkes | repetition 86 
+Running no_hawkes | repetition 87 
+Running no_hawkes | repetition 88 
+Running no_hawkes | repetition 89 
+Running no_hawkes | repetition 90 
+Running no_hawkes | repetition 91 
+Running no_hawkes | repetition 92 
+Running no_hawkes | repetition 93 
+Running no_hawkes | repetition 94 
+Running no_hawkes | repetition 95 
+Running no_hawkes | repetition 96 
+Running no_hawkes | repetition 97 
+Running no_hawkes | repetition 98 
+Running no_hawkes | repetition 99 
+Running no_hawkes | repetition 100 
+
+Saved raw results to:
+results/null_calibration_estimates.csv
+
+Summary table:
+                 scenario n_runs mu1_true alpha_true mean_events sd_events
+no_covariate no_covariate    100      0.0        0.7      212.30  21.65641
+no_hawkes       no_hawkes    100      0.7        0.0      176.42  15.45288
+               mean_mu0    mean_mu1 mean_alpha    mean_beta    sd_mu0    sd_mu1
+no_covariate -0.5019939 0.009007849  0.7023334 2.721586e+00 0.1225966 0.1123348
+no_hawkes    -0.6055193 0.740106076  0.1235775 3.488401e+05 0.1753875 0.1392291
+              sd_alpha      sd_beta rejection_cov_5pct rejection_hawkes_5pct
+no_covariate 0.2083819 1.076444e+00               0.06                  0.99
+no_hawkes    0.2755084 3.488281e+06               1.00                  0.10
+             median_p_cov median_p_hawkes conv_full_rate conv_no_cov_rate
+no_covariate 5.891137e-01    2.324226e-07              1                1
+no_hawkes    3.220709e-11    5.578596e-01              1                1
+             conv_no_hawkes_rate
+no_covariate                   1
+no_hawkes                      1
+
+Saved summary to:
+results/null_calibration_summary.csv
+
+Done.
+Generated files:
+results/null_calibration_estimates.csv
+results/null_calibration_summary.csv
+figures/null_calibration_rejection_rates.png
+figures/null_calibration_rejection_rates.pdf
+figures/null_calibration_pvalue_histograms.png
+figures/null_calibration_pvalue_histograms.pdf
+figures/null_calibration_estimate_boxplots.png
+figures/null_calibration_estimate_boxplots.pdf

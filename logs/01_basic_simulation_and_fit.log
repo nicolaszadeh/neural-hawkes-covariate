@@ -1,0 +1,48 @@
+alpha / beta = 0.28 
+Number of events: 453 
+Max number of events in one bin: 2 
+
+Full model estimates:
+       mu0        mu1      alpha       beta 
+-0.6257619  0.6427616  0.6249311  1.8241135 
+
+True values:
+  mu0   mu1 alpha  beta 
+ -0.5   0.7   0.7   2.5 
+
+Test of covariate relevance:
+H0: mu1 = 0
+LR statistic = 50.71334 
+p-value = 1.068904e-12 
+
+Test of Hawkes self-excitation:
+H0: alpha = 0
+LR statistic = 71.5227 
+p-value = 2.74086e-17 
+Warning: this p-value is approximate because alpha = 0
+is on the boundary of the parameter space.
+
+Optimization convergence codes:
+Full model: 0 
+No covariate: 0 
+No Hawkes: 0 
+
+Intensity error summaries:
+Mean absolute error: 0.07704919 
+Root mean squared error: 0.1106762 
+Mean absolute relative error: 0.08011862 
+
+Relative error quantiles:
+         1%          5%         50%         95%         99% 
+-0.17738903 -0.14695715 -0.04487532  0.14773573  0.24427690 
+
+Done.
+Generated files:
+figures/main_diagnostics.png
+figures/main_diagnostics.pdf
+figures/zoom_diagnostics.png
+figures/zoom_diagnostics.pdf
+figures/intensity_errors.png
+figures/intensity_errors.pdf
+figures/intensity_scatter.png
+figures/intensity_scatter.pdf

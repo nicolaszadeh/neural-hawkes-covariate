@@ -1,0 +1,94 @@
+alpha / beta = 0.28 
+Number of repetitions per T: 20 
+T values: 100 250 500 
+Running T = 100 | repetition 1 
+Running T = 100 | repetition 2 
+Running T = 100 | repetition 3 
+Running T = 100 | repetition 4 
+Running T = 100 | repetition 5 
+Running T = 100 | repetition 6 
+Running T = 100 | repetition 7 
+Running T = 100 | repetition 8 
+Running T = 100 | repetition 9 
+Running T = 100 | repetition 10 
+Running T = 100 | repetition 11 
+Running T = 100 | repetition 12 
+Running T = 100 | repetition 13 
+Running T = 100 | repetition 14 
+Running T = 100 | repetition 15 
+Running T = 100 | repetition 16 
+Running T = 100 | repetition 17 
+Running T = 100 | repetition 18 
+Running T = 100 | repetition 19 
+Running T = 100 | repetition 20 
+Running T = 250 | repetition 1 
+Running T = 250 | repetition 2 
+Running T = 250 | repetition 3 
+Running T = 250 | repetition 4 
+Running T = 250 | repetition 5 
+Running T = 250 | repetition 6 
+Running T = 250 | repetition 7 
+Running T = 250 | repetition 8 
+Running T = 250 | repetition 9 
+Running T = 250 | repetition 10 
+Running T = 250 | repetition 11 
+Running T = 250 | repetition 12 
+Running T = 250 | repetition 13 
+Running T = 250 | repetition 14 
+Running T = 250 | repetition 15 
+Running T = 250 | repetition 16 
+Running T = 250 | repetition 17 
+Running T = 250 | repetition 18 
+Running T = 250 | repetition 19 
+Running T = 250 | repetition 20 
+Running T = 500 | repetition 1 
+Running T = 500 | repetition 2 
+Running T = 500 | repetition 3 
+Running T = 500 | repetition 4 
+Running T = 500 | repetition 5 
+Running T = 500 | repetition 6 
+Running T = 500 | repetition 7 
+Running T = 500 | repetition 8 
+Running T = 500 | repetition 9 
+Running T = 500 | repetition 10 
+Running T = 500 | repetition 11 
+Running T = 500 | repetition 12 
+Running T = 500 | repetition 13 
+Running T = 500 | repetition 14 
+Running T = 500 | repetition 15 
+Running T = 500 | repetition 16 
+Running T = 500 | repetition 17 
+Running T = 500 | repetition 18 
+Running T = 500 | repetition 19 
+Running T = 500 | repetition 20 
+
+Saved raw results to:
+results/monte_carlo_estimates.csv
+
+Summary table:
+    T_end n_runs mean_events sd_events   mean_mu0    sd_mu0  mean_mu1
+100   100     20      101.25  15.00132 -0.5304656 0.1408711 0.6799948
+250   250     20      255.90  20.78689 -0.4817526 0.1415599 0.7370851
+500   500     20      493.55  39.47748 -0.5147580 0.0838768 0.7192300
+        sd_mu1 mean_alpha  sd_alpha mean_beta   sd_beta rejection_cov_5pct
+100 0.12473200  0.8152170 0.4072380  2.759553 1.4882965                  1
+250 0.14962882  0.7511497 0.2286006  2.826082 0.9251806                  1
+500 0.06864379  0.7262837 0.2121388  2.580082 0.6869159                  1
+    rejection_hawkes_5pct conv_full_rate conv_no_cov_rate conv_no_hawkes_rate
+100                  0.95              1                1                   1
+250                  1.00              1                1                   1
+500                  1.00              1                1                   1
+
+Saved summary to:
+results/monte_carlo_summary.csv
+
+Done.
+Generated files:
+results/monte_carlo_estimates.csv
+results/monte_carlo_summary.csv
+figures/monte_carlo_parameter_boxplots.png
+figures/monte_carlo_parameter_boxplots.pdf
+figures/monte_carlo_mean_estimates.png
+figures/monte_carlo_mean_estimates.pdf
+figures/monte_carlo_rejection_rates.png
+figures/monte_carlo_rejection_rates.pdf

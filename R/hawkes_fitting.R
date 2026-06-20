@@ -14,6 +14,16 @@ compute_event_rate <- function(dN, dt) {
 
 
 # ============================================================
+# Small utility: remove accidental row names
+# ============================================================
+
+clean_output_table <- function(df) {
+  rownames(df) <- NULL
+  df
+}
+
+
+# ============================================================
 # Check that likelihood functions have been loaded
 # ============================================================
 
@@ -232,14 +242,14 @@ fit_all_models_and_tests <- function(
     lower.tail = FALSE
   )
   
-  data.frame(
+  out <- data.frame(
     n_events = sum(dN),
     max_dN = max(dN),
     
-    mu0_hat = full$est["mu0"],
-    mu1_hat = full$est["mu1"],
-    alpha_hat = full$est["alpha"],
-    beta_hat = full$est["beta"],
+    mu0_hat = unname(full$est["mu0"]),
+    mu1_hat = unname(full$est["mu1"]),
+    alpha_hat = unname(full$est["alpha"]),
+    beta_hat = unname(full$est["beta"]),
     
     loglik_full = full$loglik,
     loglik_no_cov = no_cov$loglik,
@@ -255,6 +265,8 @@ fit_all_models_and_tests <- function(
     conv_no_cov = no_cov$fit$convergence,
     conv_no_hawkes = no_hawkes$fit$convergence
   )
+  
+  clean_output_table(out)
 }
 
 
@@ -294,16 +306,16 @@ fit_hawkes_test <- function(
     lower.tail = FALSE
   )
   
-  data.frame(
+  out <- data.frame(
     n_events = sum(dN),
     
-    mu0_null = no_hawkes$est["mu0"],
-    mu1_null = no_hawkes$est["mu1"],
+    mu0_null = unname(no_hawkes$est["mu0"]),
+    mu1_null = unname(no_hawkes$est["mu1"]),
     
-    mu0_full = full$est["mu0"],
-    mu1_full = full$est["mu1"],
-    alpha_full = full$est["alpha"],
-    beta_full = full$est["beta"],
+    mu0_full = unname(full$est["mu0"]),
+    mu1_full = unname(full$est["mu1"]),
+    alpha_full = unname(full$est["alpha"]),
+    beta_full = unname(full$est["beta"]),
     
     loglik_null = no_hawkes$loglik,
     loglik_full = full$loglik,
@@ -314,6 +326,8 @@ fit_hawkes_test <- function(
     conv_null = no_hawkes$fit$convergence,
     conv_full = full$fit$convergence
   )
+  
+  clean_output_table(out)
 }
 
 
@@ -353,17 +367,17 @@ fit_covariate_test <- function(
     lower.tail = FALSE
   )
   
-  data.frame(
+  out <- data.frame(
     n_events = sum(dN),
     
-    mu0_null = no_cov$est["mu0"],
-    alpha_null = no_cov$est["alpha"],
-    beta_null = no_cov$est["beta"],
+    mu0_null = unname(no_cov$est["mu0"]),
+    alpha_null = unname(no_cov$est["alpha"]),
+    beta_null = unname(no_cov$est["beta"]),
     
-    mu0_full = full$est["mu0"],
-    mu1_full = full$est["mu1"],
-    alpha_full = full$est["alpha"],
-    beta_full = full$est["beta"],
+    mu0_full = unname(full$est["mu0"]),
+    mu1_full = unname(full$est["mu1"]),
+    alpha_full = unname(full$est["alpha"]),
+    beta_full = unname(full$est["beta"]),
     
     loglik_null = no_cov$loglik,
     loglik_full = full$loglik,
@@ -374,4 +388,6 @@ fit_covariate_test <- function(
     conv_null = no_cov$fit$convergence,
     conv_full = full$fit$convergence
   )
+  
+  clean_output_table(out)
 }
