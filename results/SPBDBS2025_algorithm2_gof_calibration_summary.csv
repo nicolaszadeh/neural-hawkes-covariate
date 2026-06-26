@@ -1,0 +1,4 @@
+"test","rejection_rate","target_level","mean_p_value","median_p_value","mean_D","mean_n_events","mean_m_subsample","mean_nonpositive_corrected"
+"usual",0,0.05,0.855094122244405,0.913559734710836,0.0173328187039765,1123.36,107.52,0
+"corrected",0,0.05,0.669715616260019,0.774790679852251,0.0216919665596349,1123.36,107.52,0
+"subsampled_corrected",0.04,0.05,0.53368731228544,0.559327487916216,0.0822366475589856,1123.36,107.52,0

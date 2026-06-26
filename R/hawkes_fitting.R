@@ -388,6 +388,187 @@ fit_covariate_test <- function(
     conv_null = no_cov$fit$convergence,
     conv_full = full$fit$convergence
   )
-  
   clean_output_table(out)
+}
+
+# ============================================================
+# Continuous-time Hawkes MLE helpers
+# ============================================================
+
+check_continuous_hawkes_dependencies <- function() {
+  needed <- c(
+    "hawkes_negloglik_theta",
+    "hawkes_negscore_theta"
+  )
+
+  missing <- needed[!vapply(needed, exists, logical(1))]
+
+  if (length(missing) > 0) {
+    stop(
+      "Missing functions: ",
+      paste(missing, collapse = ", "),
+      "\nPlease source R/hawkes_likelihood.R and R/hawkes_gradient.R first."
+    )
+  }
+
+  invisible(TRUE)
+}
+
+fit_hawkes_continuous <- function(
+    events,
+    T_end,
+    method = "BFGS",
+    use_gradient = TRUE,
+    theta_init = NULL,
+    maxit = 10000
+) {
+  check_continuous_hawkes_dependencies()
+
+  if (is.null(theta_init)) {
+    theta_init <- log(c(
+      max(length(events), 1) / T_end,
+      0.2,
+      1.0
+    ))
+  }
+
+  if (use_gradient && method %in% c("BFGS", "CG", "L-BFGS-B")) {
+    fit <- optim(
+      par = theta_init,
+      fn = hawkes_negloglik_theta,
+      gr = hawkes_negscore_theta,
+      events = events,
+      T_end = T_end,
+      method = method,
+      control = list(maxit = maxit)
+    )
+  } else {
+    fit <- optim(
+      par = theta_init,
+      fn = hawkes_negloglik_theta,
+      events = events,
+      T_end = T_end,
+      method = method,
+      control = list(maxit = maxit)
+    )
+  }
+
+  theta_hat <- fit$par
+  names(theta_hat) <- c("log_mu", "log_alpha", "log_beta")
+
+  mu_hat <- exp(theta_hat["log_mu"])
+  alpha_hat <- exp(theta_hat["log_alpha"])
+  beta_hat <- exp(theta_hat["log_beta"])
+
+  list(
+    fit = fit,
+    theta_hat = theta_hat,
+    mu = unname(mu_hat),
+    alpha = unname(alpha_hat),
+    beta = unname(beta_hat),
+    branching = unname(alpha_hat / beta_hat),
+    loglik = -fit$value
+  )
+}
+
+# Short alias used by the later scripts.
+fit_hawkes <- fit_hawkes_continuous
+
+# ============================================================
+# Continuous-time covariate-Hawkes MLE helpers
+# ============================================================
+
+fit_covariate_hawkes_continuous <- function(
+    events,
+    grid,
+    X,
+    method = "Nelder-Mead",
+    theta_init = NULL,
+    maxit = 20000
+) {
+  if (!exists("covariate_hawkes_negloglik")) {
+    stop("Please source R/hawkes_likelihood.R first.")
+  }
+
+  T_end <- max(grid)
+
+  if (is.null(theta_init)) {
+    theta_init <- c(
+      log(max(length(events), 1) / T_end),
+      0,
+      log(0.2),
+      log(1.0)
+    )
+  }
+
+  fit <- optim(
+    par = theta_init,
+    fn = covariate_hawkes_negloglik,
+    events = events,
+    grid = grid,
+    X = X,
+    method = method,
+    control = list(maxit = maxit)
+  )
+
+  theta_hat <- fit$par
+  names(theta_hat) <- c("gamma0", "gamma1", "log_alpha", "log_beta")
+
+  alpha_hat <- exp(theta_hat["log_alpha"])
+  beta_hat <- exp(theta_hat["log_beta"])
+
+  list(
+    fit = fit,
+    theta_hat = theta_hat,
+    gamma0 = unname(theta_hat["gamma0"]),
+    gamma1 = unname(theta_hat["gamma1"]),
+    alpha = unname(alpha_hat),
+    beta = unname(beta_hat),
+    branching = unname(alpha_hat / beta_hat),
+    loglik = -fit$value
+  )
+}
+
+fit_covariate_hawkes <- fit_covariate_hawkes_continuous
+
+fit_covariate_poisson <- function(
+    events,
+    grid,
+    X,
+    theta_init = NULL,
+    maxit = 10000
+) {
+  if (!exists("covariate_poisson_negloglik")) {
+    stop("Please source R/hawkes_likelihood.R first.")
+  }
+
+  T_end <- max(grid)
+
+  if (is.null(theta_init)) {
+    theta_init <- c(
+      log(max(length(events), 1) / T_end),
+      0
+    )
+  }
+
+  fit <- optim(
+    par = theta_init,
+    fn = covariate_poisson_negloglik,
+    events = events,
+    grid = grid,
+    X = X,
+    method = "BFGS",
+    control = list(maxit = maxit)
+  )
+
+  theta_hat <- fit$par
+  names(theta_hat) <- c("gamma0", "gamma1")
+
+  list(
+    fit = fit,
+    theta_hat = theta_hat,
+    gamma0 = unname(theta_hat["gamma0"]),
+    gamma1 = unname(theta_hat["gamma1"]),
+    loglik = -fit$value
+  )
 }

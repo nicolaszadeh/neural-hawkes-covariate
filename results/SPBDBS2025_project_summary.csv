@@ -1,0 +1,14 @@
+script,message,metric,value
+26,Algorithm 1 Wald test,branching_hat,0.27
+27,Algorithm 2 corrected GOF,corrected_p,0.3773
+28,Algorithm 3 equality Wald test,min_p_value,0
+29a,Wald calibration Algorithm 1,mean_rejection_rate,0.06
+29b,Wald calibration Algorithm 3,rejection_rate,0.06
+30,Algorithm 2 GOF calibration,subsampled_rejection_rate,0.04
+31,Covariate-Hawkes model example,branching_hat,0.3
+32,Covariate Wald calibration,mean_rejection_rate,0.05
+33,Covariate Algorithm 2 GOF,usual_p,0.6645
+33,Covariate Algorithm 2 GOF,corrected_p,0.7159
+33,Covariate Algorithm 2 GOF,subsampled_p,0.3019
+33,Covariate Algorithm 2 GOF,mean_rescaled_gap,0.998
+33,Covariate Algorithm 2 GOF,var_rescaled_gap,0.98

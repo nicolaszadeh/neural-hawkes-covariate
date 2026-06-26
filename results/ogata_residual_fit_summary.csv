@@ -1,0 +1,2 @@
+"n_events","mu_true","alpha_true","beta_true","branching_true","mu_hat_hawkes","alpha_hat","beta_hat","branching_hat","mu_hat_poisson"
+1125,0.8,0.35,1.2,0.291666666666667,0.807754317330653,0.369417907818671,1.30970856411159,0.282061153100313,1.125

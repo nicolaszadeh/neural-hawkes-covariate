@@ -1,0 +1,2 @@
+"n_events","T_end","gamma0_true","gamma1_true","alpha_true","beta_true","branching_true","kappa_true","sigma_true","gamma0_hat","gamma1_hat","alpha_hat","beta_hat","branching_hat","neg_loglik","convergence"
+679,500,-0.5,0.9,0.35,1.2,0.291666666666667,0.4,0.8,-0.459032125882353,0.886456863569863,0.318334032811751,1.28780476172274,0.247191222049766,251.318281544375,0

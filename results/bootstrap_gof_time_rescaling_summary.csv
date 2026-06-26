@@ -1,0 +1,2 @@
+"observed_n_events","observed_D","observed_raw_ks_p_value","bootstrap_p_empirical","bootstrap_p_corrected","observed_mean_z","observed_var_z","mu_true","alpha_true","beta_true","branching_true","mu_hat","alpha_hat","beta_hat","branching_hat","B"
+1092,0.0124061128887403,0.996032860229994,0.99,0.99009900990099,0.999466378351355,1.0029212835233,0.8,0.35,1.2,0.291666666666667,0.800858658432549,0.329799817659028,1.23546740873174,0.266943357087486,100

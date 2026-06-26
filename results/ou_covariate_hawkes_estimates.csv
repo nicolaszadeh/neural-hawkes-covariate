@@ -1,0 +1,15 @@
+"parameter","value"
+"gamma0_true",-0.5
+"gamma1_true",0.9
+"alpha_true",0.35
+"beta_true",1.2
+"branching_true",0.291666666666667
+"kappa_true",0.4
+"sigma_true",0.8
+"gamma0_cov_hat",-0.119196476706197
+"gamma1_cov_hat",0.838247987778128
+"gamma0_hawkes_hat",-0.467361878540364
+"gamma1_hawkes_hat",0.887722196582446
+"alpha_hat",0.486336856777252
+"beta_hat",1.76141904020833
+"branching_hat",0.276105143452822

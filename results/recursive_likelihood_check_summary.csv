@@ -1,0 +1,2 @@
+"T_end","n_events","mu_true","alpha_true","beta_true","branching_true","loglik_naive","loglik_recursive","abs_difference"
+500,608,0.8,0.35,1.2,0.291666666666667,-466.986115336396,-466.986115336396,5.6843418860808e-14

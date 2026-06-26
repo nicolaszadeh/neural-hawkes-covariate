@@ -1,0 +1,10 @@
+"parameter","value"
+"gamma0_true",-0.3
+"gamma1_true",1.1
+"gamma0_hat",-0.208126797319923
+"gamma1_hat",1.07936597679981
+"mu_const_hat",1.14999999717867
+"mu_hawkes_hat",0.377649890163142
+"alpha_hawkes_hat",0.40942470221925
+"beta_hawkes_hat",0.604281777154511
+"branching_hat",0.677539382615806

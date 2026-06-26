@@ -1,0 +1,2 @@
+"observed_n_events","observed_LR","p_empirical","p_corrected","observed_branching_hat","observed_alpha_hat","observed_beta_hat","gamma0_true","gamma1_true","alpha_true","beta_true","branching_true","kappa_true","sigma_true","gamma0_null_hat","gamma1_null_hat","B"
+222,6.21212719389575,0.04,0.0495049504950495,0.224224038234513,0.218567961508749,0.974774886893046,-0.5,0.9,0.35,1.2,0.291666666666667,0.4,0.8,-0.0893565299934977,0.740412334272868,100

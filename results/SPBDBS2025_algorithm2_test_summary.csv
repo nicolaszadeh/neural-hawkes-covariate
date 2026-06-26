@@ -1,0 +1,2 @@
+"n_events","m_subsample","n_nonpositive_corrected","correction_scalar","usual_D","usual_p","corrected_D","corrected_p","subsampled_D","subsampled_p","usual_reject","corrected_reject","subsampled_reject"
+1167,110,0,0.722706670072464,0.0201002717223862,0.733324184186062,0.0266760731112696,0.377334495412891,0.0669131350592093,0.708251832924274,FALSE,FALSE,FALSE

@@ -1,0 +1,2 @@
+"n_events","T_end","mu_true","alpha_true","beta_true","branching_true","mu_hat","alpha_hat","beta_hat","branching_hat","neg_loglik","convergence"
+1103,1000,0.8,0.35,1.2,0.291666666666667,0.805044950110553,0.406571070628466,1.50495171335396,0.270155558494548,961.715283611141,0
